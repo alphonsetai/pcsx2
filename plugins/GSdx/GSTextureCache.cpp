@@ -1847,13 +1847,12 @@ void GSTextureCache::Target::Update()
 	// Alternate
 	// 1/ uses multiple vertex rectangle
 
-	GSVector2i t_size = m_texture->GetSize();
-	GSVector2 t_scale = m_texture->GetScale();
+	GSVector2i t_size = default_rt_size;
 
-	//Avoids division by zero when calculating texture size.
-	t_scale = GSVector2(std::max(1.0f, t_scale.x), std::max(1.0f, t_scale.y));
-	t_size.x = lround(static_cast<float>(t_size.x) / t_scale.x);
-	t_size.y = lround(static_cast<float>(t_size.y) / t_scale.y);
+	// Ensure buffer width is at least of the minimum required value.
+	// Probably not necessary but doesn't hurt to be on the safe side.
+	int buffer_width = static_cast<int>(m_TEX0.TBW << 6);
+	t_size.x = std::max(buffer_width, t_size.x);
 
 	// Don't load above the GS memory
 	int max_y_blocks = (MAX_BLOCKS - m_TEX0.TBP0) / std::max(1u, m_TEX0.TBW);
