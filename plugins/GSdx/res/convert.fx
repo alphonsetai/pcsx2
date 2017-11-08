@@ -319,6 +319,87 @@ PS_OUTPUT ps_main9(PS_INPUT input) // triangular
 
 	return output;
 }
+PS_OUTPUT ps_main11(PS_INPUT input)
+{
+	PS_OUTPUT output;
+
+	return output;
+}
+
+PS_OUTPUT ps_main16(PS_INPUT input)
+{
+	PS_OUTPUT output;
+
+	return output;
+}
+
+// 8bits shader
+PS_OUTPUT ps_main17(PS_INPUT input)
+{
+	PS_OUTPUT output;
+
+	float c;
+
+	uint2 sel = uint2(SV_Position.xy) % uint2(16u, 16u);
+	int2 tb = ((int2(SV_Position.xy) & ~int2(15, 3)) >> 1);
+
+	int ty = tb.y | (int(SV_Position.y) & 1);
+	int txN = tb.x | (int(SV_Position.x) & 7);
+	int txH = tb.x | ((int(SV_Position.x) + 4) & 7);
+
+	// Disabled atm for resolution upscale
+	// txN *= ScalingFactor.x;
+	// txH *= ScalingFactor.x;
+	// ty *= ScalingFactor.y;
+
+	// TODO investigate texture gather
+	float4 cN = Load(TextureSampler, int2(txN, ty), 0);
+	float4 cH = Load(TextureSampler, int2(txH, ty), 0);
+
+	if ((sel.y & 4u) == 0u) {
+		// Column 0 and 2
+#ifdef ONLY_BLUE
+		c = cN.b;
+#else
+		if ((sel.y & 3u) < 2u) {
+			// first 2 lines of the col
+			if (sel.x < 8u)
+				c = cN.r;
+			else
+				c = cN.b;
+		}
+		else {
+			if (sel.x < 8u)
+				c = cH.g;
+			else
+				c = cH.a;
+		}
+#endif
+	}
+	else {
+#ifdef ONLY_BLUE
+		c = cH.b;
+#else
+		// Column 1 and 3
+		if ((sel.y & 3u) < 2u) {
+			// first 2 lines of the col
+			if (sel.x < 8u)
+				c = cH.r;
+			else
+				c = cH.b;
+		}
+		else {
+			if (sel.x < 8u)
+				c = cN.g;
+			else
+				c = cN.a;
+		}
+#endif
+	}
+
+	SV_Target0 = float4(c);
+
+}
 
 #endif
 #endif
