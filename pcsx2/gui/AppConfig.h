@@ -20,6 +20,8 @@
 #include "CDVD/CDVDaccess.h"
 #include <memory>
 
+const wxString DefaultTitleTemplate = L"Slot: ${slot} | Speed: ${speed} (${vfps}) | ${videomode} | Limiter: ${limiter} | ${gsdx} | ${omodei} | ${cpuusage}";
+
 enum DocsModeType
 {
 	// uses /home/user or /cwd for the program data.  This is the default mode and is the most
