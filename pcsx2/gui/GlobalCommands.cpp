@@ -22,8 +22,6 @@
 #include "AppAccelerators.h"
 #include "AppSaveStates.h"
 
-#include "Utilities/HashMap.h"
-
 // Various includes needed for dumping...
 #include "GS.h"
 #include "Dump.h"
@@ -353,7 +351,7 @@ namespace Implementations
 
 	void Sys_TakeSnapshot()
 	{
-		GSmakeSnapshot( g_Conf->Folders.Snapshots.ToAscii() );
+		GSmakeSnapshot( g_Conf->Folders.Snapshots.ToUTF8() );
 	}
 
 	void Sys_RenderToggle()

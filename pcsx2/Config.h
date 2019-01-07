@@ -295,7 +295,7 @@ struct Pcsx2Config
 		// forces the MTGS to execute tags/tasks in fully blocking/synchronous
 		// style.  Useful for debugging potential bugs in the MTGS pipeline.
 		bool	SynchronousMTGS;
-		bool	DisableOutput;
+
 		int		VsyncQueueSize;
 
 		bool		FrameLimitEnable;
@@ -318,7 +318,6 @@ struct Pcsx2Config
 		{
 			return
 				OpEqu( SynchronousMTGS )		&&
-				OpEqu( DisableOutput )			&&
 				OpEqu( VsyncQueueSize )			&&
 				
 				OpEqu( FrameSkipEnable )		&&
@@ -400,7 +399,7 @@ struct Pcsx2Config
 		BITFIELD_END
 
 		s8	EECycleRate;		// EE cycle rate selector (1.0, 1.5, 2.0)
-		u8	VUCycleSteal;		// VU Cycle Stealer factor (0, 1, 2, or 3)
+		u8	EECycleSkip;		// EE Cycle skip factor (0, 1, 2, or 3)
 
 		SpeedhackOptions();
 		void LoadSave( IniInterface& conf );
@@ -408,7 +407,7 @@ struct Pcsx2Config
 
 		bool operator ==( const SpeedhackOptions& right ) const
 		{
-			return OpEqu( bitset ) && OpEqu( EECycleRate ) && OpEqu( VUCycleSteal );
+			return OpEqu( bitset ) && OpEqu( EECycleRate ) && OpEqu( EECycleSkip );
 		}
 
 		bool operator !=( const SpeedhackOptions& right ) const

@@ -27,6 +27,9 @@
 #include "AppCoreThread.h"
 #include "RecentIsoList.h"
 
+//Purely to make sure the saveslot define comes through. Remove if it gets removed.
+#include "Saveslots.h"
+
 class DisassemblyDialog;
 
 #include "System.h"
@@ -118,7 +121,6 @@ enum MenuIdentifiers
 	MenuId_Config_SysSettings,
 	MenuId_Config_McdSettings,
 	MenuId_Config_AppSettings,
-	MenuId_Config_GameDatabase,
 	MenuId_Config_BIOS,
 	MenuId_Config_Language,
 
@@ -192,15 +194,14 @@ struct AppImageIds
 			Gamefixes,
 			MemoryCard,
 			Video,
-			Cpu,
-			Appearance;
+			Cpu;
 
 		ConfigIds()
 		{
 			Paths		= Plugins		=
 			Speedhacks	= Gamefixes		=
 			Video		= Cpu			= 
-			MemoryCard	= Appearance	= -1;
+			MemoryCard	= -1;
 		}
 	} Config;
 
@@ -286,6 +287,8 @@ public:
 	wxString		IsoFile;
 
 	wxString		ElfFile;
+
+	wxString		GameLaunchArgs;
 
 	// Specifies the CDVD source type to use when AutoRunning
 	CDVD_SourceType CdvdSource;

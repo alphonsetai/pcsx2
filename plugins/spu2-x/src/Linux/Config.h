@@ -92,12 +92,11 @@ namespace SoundtouchCfg
 void ReadSettings();
 void WriteSettings();
 void DisplayDialog();
-};
+}; // namespace SoundtouchCfg
 
 void ReadSettings();
 void WriteSettings();
 void configure();
-void AboutBox();
 extern wxFileConfig *spuConfig;
 extern bool pathSet;
 extern void initIni();

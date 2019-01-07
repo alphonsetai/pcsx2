@@ -22,6 +22,17 @@ set(CommonFlags
     -DWX_PRECOMP
 	)
 
+# Largely turning off because LegacyPluginAPI_Common in Plugins.h spams really badly in gcc 8 due to the memzero initialization.
+# Should probably be fixed properly, but for now this should work.
+if(GCC_VERSION VERSION_EQUAL "8.0" OR GCC_VERSION VERSION_GREATER "8.0")
+    set(CommonFlags
+	    ${CommonFlags}
+	    -Wno-class-memaccess
+    )
+endif()
+
+
+
 if ("${PGO}" STREQUAL "generate")
     set(pcsx2FinalFlags -fprofile-generate)
 elseif("${PGO}" STREQUAL "use")
@@ -256,14 +267,12 @@ set(pcsx2GuiSources
 	gui/ConsoleLogger.cpp
 	gui/CpuUsageProvider.cpp
 	gui/Dialogs/AboutBoxDialog.cpp
-	gui/Dialogs/AppConfigDialog.cpp
 	gui/Dialogs/AssertionDialog.cpp
 	gui/Dialogs/BaseConfigurationDialog.cpp
 	gui/Dialogs/ConfirmationDialogs.cpp
 	gui/Dialogs/ConvertMemoryCardDialog.cpp
 	gui/Dialogs/CreateMemoryCardDialog.cpp
 	gui/Dialogs/FirstTimeWizard.cpp
-	gui/Dialogs/GameDatabaseDialog.cpp
 	gui/Dialogs/ImportSettingsDialog.cpp
 	gui/Dialogs/LogOptionsDialog.cpp
 	gui/Dialogs/McdConfigDialog.cpp
@@ -291,7 +300,6 @@ set(pcsx2GuiSources
 	gui/Panels/BiosSelectorPanel.cpp
 	gui/Panels/CpuPanel.cpp
 	gui/Panels/DirPickerPanel.cpp
-	gui/Panels/GameDatabasePanel.cpp
 	gui/Panels/GameFixesPanel.cpp
 	gui/Panels/GSWindowPanel.cpp
 	gui/Panels/LogOptionsPanels.cpp
@@ -346,6 +354,7 @@ set(pcsx2GuiHeaders
 	gui/Panels/MemoryCardPanels.h
 	gui/pxEventThread.h
 	gui/RecentIsoList.h
+	gui/Saveslots.h
 	)
 
 # Warning: the declaration of the .h are mandatory in case of resources files. It will ensure the creation
@@ -358,7 +367,6 @@ set(pcsx2GuiResources
     ${res_bin}/AppIcon32.h
     ${res_bin}/AppIcon64.h
     ${res_bin}/BackgroundLogo.h
-    ${res_bin}/ConfigIcon_Appearance.h
     ${res_bin}/ButtonIcon_Camera.h
     ${res_bin}/ConfigIcon_Cpu.h
     ${res_bin}/ConfigIcon_Gamefixes.h
@@ -698,7 +706,7 @@ file(MAKE_DIRECTORY ${res_bin})
 
 foreach(res_file IN ITEMS
         AppIcon16 AppIcon32 AppIcon64 BackgroundLogo Logo ButtonIcon_Camera
-        ConfigIcon_Appearance ConfigIcon_Cpu ConfigIcon_Gamefixes ConfigIcon_MemoryCard
+        ConfigIcon_Cpu ConfigIcon_Gamefixes ConfigIcon_MemoryCard
         ConfigIcon_Paths ConfigIcon_Plugins ConfigIcon_Speedhacks ConfigIcon_Video Breakpoint_Active Breakpoint_Inactive)
     add_custom_command(OUTPUT  "${res_bin}/${res_file}.h" COMMAND perl ${CMAKE_SOURCE_DIR}/linux_various/hex2h.pl "${res_src}/${res_file}.png" "${res_bin}/${res_file}" )
 endforeach()
@@ -707,11 +715,10 @@ if(USE_VTUNE)
     set(pcsx2FinalLibs ${pcsx2FinalLibs} ${VTUNE_LIBRARIES})
 endif()
 
-# Suppress all the system-specific predefined macros outside the reserved namespace.
-# Needed when stringifying macros.
-# See issue: 1233
-if(PACKAGE_MODE)
-	SET_SOURCE_FILES_PROPERTIES(gui/AppConfig.cpp PROPERTIES COMPILE_FLAGS "-Wp,-ansi,-U__STRICT_ANSI__")
-endif()
-
 add_pcsx2_executable(${Output} "${pcsx2FinalSources}" "${pcsx2FinalLibs}" "${pcsx2FinalFlags}")
+
+if(PACKAGE_MODE)
+	install(CODE "execute_process(COMMAND /bin/bash -c \"echo 'Enabling networking capability on Linux...';set -x; [ -f ${BIN_DIR}/${Output} ] && sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' ${BIN_DIR}/${Output}; set +x\")")
+else()
+	install(CODE "execute_process(COMMAND /bin/bash -c \"echo 'Enabling networking capability on Linux...';set -x; [ -f ${CMAKE_SOURCE_DIR}/bin/${Output} ] && sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' ${CMAKE_SOURCE_DIR}/bin/${Output}; set +x\")")
+endif()

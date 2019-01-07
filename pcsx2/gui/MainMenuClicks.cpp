@@ -43,11 +43,6 @@ void MainEmuFrame::Menu_McdSettings_Click(wxCommandEvent &event)
 	AppOpenModalDialog<McdConfigDialog>(wxEmptyString, this);
 }
 
-void MainEmuFrame::Menu_GameDatabase_Click(wxCommandEvent &event)
-{
-	AppOpenDialog<GameDatabaseDialog>( this );
-}
-
 void MainEmuFrame::Menu_WindowSettings_Click(wxCommandEvent &event)
 {
 	wxCommandEvent evt( pxEvt_SetSettingsPage );
@@ -577,6 +572,7 @@ void MainEmuFrame::Menu_SysShutdown_Click(wxCommandEvent &event)
 	//if( !SysHasValidState() && !CorePlugins.AreAnyInitialized() ) return;
 
 	UI_DisableSysShutdown();
+	Console.SetTitle("PCSX2 Program Log");
 	CoreThread.Reset();
 }
 

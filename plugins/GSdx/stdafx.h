@@ -39,11 +39,8 @@
 #include <shellapi.h>
 #include <d3dcompiler.h>
 #include <d3d11.h>
-#include <d3d9.h>
 #include <comutil.h>
 #include <atlcomcli.h>
-
-#define D3DCOLORWRITEENABLE_RGBA (D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA)
 
 #else
 
@@ -51,6 +48,7 @@
 
 #endif
 
+#include <PluginCompatibility.h>
 
 #ifdef ENABLE_OPENCL
 
@@ -131,7 +129,7 @@ typedef int64 sint64;
 	#include <GL/gl.h>
 	#include <GL/glext.h>
 	#include <GL/wglext.h>
-	#include "GLLoader.h"
+	#include "Renderers/OpenGL/GLLoader.h"
 
 	#define DIRECTORY_SEPARATOR '\\'
 
@@ -140,7 +138,7 @@ typedef int64 sint64;
 	// Note use GL/glcorearb.h on the future
 	#include <GL/gl.h>
 	#include <GL/glext.h>
-	#include "GLLoader.h"
+	#include "Renderers/OpenGL/GLLoader.h"
 
 	#include <sys/stat.h> // mkdir
 

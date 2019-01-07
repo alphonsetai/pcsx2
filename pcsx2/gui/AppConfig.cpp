@@ -102,12 +102,6 @@ namespace PathDefs
 			static const wxDirName retval( L"dumps" );
 			return retval;
 		}
-
-		const wxDirName& Themes()
-		{
-			static const wxDirName retval( L"themes" );
-			return retval;
-		}
 		
 		const wxDirName& Docs()
 		{
@@ -120,7 +114,7 @@ namespace PathDefs
 	// (currently it's the CWD, but in the future I intend to move all binaries to a "bin"
 	// sub folder, in which case the approot will become "..") [- Air?]
 
-	//The installer installs the folders which are relative to AppRoot (that's plugins/themes/langs)
+	//The installer installs the folders which are relative to AppRoot (that's plugins/langs)
 	//  relative to the exe folder, and not relative to cwd. So the exe should be default AppRoot. - avih
 	const wxDirName& AppRoot()
 	{
@@ -238,11 +232,6 @@ namespace PathDefs
 #endif
 	}
 
-	wxDirName GetThemes()
-	{
-		return GetDocuments() + Base::Themes();
-	}
-
 	wxDirName GetSettings()
 	{
 		return GetDocuments() + Base::Settings();
@@ -264,7 +253,6 @@ namespace PathDefs
 		{
 			case FolderId_Plugins:		return GetPlugins();
 			case FolderId_Settings:		return GetSettings();
-			case FolderId_Themes:		return GetThemes();
 			case FolderId_Bios:			return GetBios();
 			case FolderId_Snapshots:	return GetSnapshots();
 			case FolderId_Savestates:	return GetSavestates();
@@ -288,7 +276,6 @@ wxDirName& AppConfig::FolderOptions::operator[]( FoldersEnum_t folderidx )
 	{
 		case FolderId_Plugins:		return PluginsFolder;
 		case FolderId_Settings:		return SettingsFolder;
-		case FolderId_Themes:		return ThemesFolder;
 		case FolderId_Bios:			return Bios;
 		case FolderId_Snapshots:	return Snapshots;
 		case FolderId_Savestates:	return Savestates;
@@ -316,7 +303,6 @@ bool AppConfig::FolderOptions::IsDefault( FoldersEnum_t folderidx ) const
 	{
 		case FolderId_Plugins:		return UseDefaultPluginsFolder;
 		case FolderId_Settings:		return UseDefaultSettingsFolder;
-		case FolderId_Themes:		return UseDefaultThemesFolder;
 		case FolderId_Bios:			return UseDefaultBios;
 		case FolderId_Snapshots:	return UseDefaultSnapshots;
 		case FolderId_Savestates:	return UseDefaultSavestates;
@@ -345,11 +331,6 @@ void AppConfig::FolderOptions::Set( FoldersEnum_t folderidx, const wxString& src
 		case FolderId_Settings:
 			SettingsFolder = src;
 			UseDefaultSettingsFolder = useDefault;
-		break;
-
-		case FolderId_Themes:
-			ThemesFolder = src;
-			UseDefaultThemesFolder = useDefault;
 		break;
 
 		case FolderId_Bios:
@@ -529,9 +510,8 @@ AppConfig::AppConfig()
 	, SysSettingsTabName( L"Cpu" )
 	, McdSettingsTabName( L"none" )
 	, ComponentsTabName( L"Plugins" )
-	, AppSettingsTabName( L"Appearance" )
+	, AppSettingsTabName( L"none" )
 	, GameDatabaseTabName( L"none" )
-	, DeskTheme( L"default" )
 {
 	LanguageId			= wxLANGUAGE_DEFAULT;
 	LanguageCode		= L"default";
@@ -593,13 +573,12 @@ void App_LoadSaveInstallSettings( IniInterface& ini )
 	ini.Entry( L"SettingsFolder",			SettingsFolder,				PathDefs::GetSettings() );
 
 	// "Install_Dir" conforms to the NSIS standard install directory key name.
-	// Attempt to load plugins and themes based on the Install Folder.
+	// Attempt to load plugins based on the Install Folder.
 
 	ini.Entry( L"Install_Dir",				InstallFolder,				(wxDirName)(wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPath()) );
 	SetFullBaseDir( InstallFolder );
 
 	//ini.Entry( L"PluginsFolder",			PluginsFolder,				InstallFolder + PathDefs::Base::Plugins() );
-	ini.Entry( L"ThemesFolder",				ThemesFolder,				InstallFolder + PathDefs::Base::Themes() );
 
 	ini.Flush();
 }
@@ -653,7 +632,6 @@ void AppConfig::LoadSaveRootItems( IniInterface& ini )
 	IniEntry( LanguageCode );
 	IniEntry( RecentIsoCount );
 	IniEntry( GzipIsoIndexTemplate );
-	IniEntry( DeskTheme );
 	IniEntry( Listbook_ImageSize );
 	IniEntry( Toolbar_ImageSize );
 	IniEntry( Toolbar_ShowLabels );
@@ -839,6 +817,7 @@ AppConfig::GSWindowOptions::GSWindowOptions()
 	DisableScreenSaver		= true;
 
 	AspectRatio				= AspectRatio_4_3;
+	FMVAspectRatioSwitch	= FMV_AspectRatio_Switch_Off;
 	Zoom					= 100;
 	StretchY				= 100;
 	OffsetX					= 0;
@@ -851,7 +830,6 @@ AppConfig::GSWindowOptions::GSWindowOptions()
 	EnableVsyncWindowFlag	= false;
 
 	IsToggleFullscreenOnDoubleClick = true;
-	IsToggleAspectRatioSwitch = false;
 }
 
 void AppConfig::GSWindowOptions::SanityCheck()
@@ -890,7 +868,6 @@ void AppConfig::GSWindowOptions::LoadSave( IniInterface& ini )
 	IniEntry( EnableVsyncWindowFlag );
 
 	IniEntry( IsToggleFullscreenOnDoubleClick );
-	IniEntry( IsToggleAspectRatioSwitch );
 
 	static const wxChar* AspectRatioNames[] =
 	{
@@ -902,6 +879,17 @@ void AppConfig::GSWindowOptions::LoadSave( IniInterface& ini )
 	};
 
 	ini.EnumEntry( L"AspectRatio", AspectRatio, AspectRatioNames, AspectRatio );
+
+	static const wxChar* FMVAspectRatioSwitchNames[] =
+	{
+		L"Off",
+		L"4:3",
+		L"16:9",
+		// WARNING: array must be NULL terminated to compute it size
+		NULL
+	};
+	ini.EnumEntry(L"FMVAspectRatioSwitch", FMVAspectRatioSwitch, FMVAspectRatioSwitchNames, FMVAspectRatioSwitch);
+
 	IniEntry( Zoom );
 
 	if( ini.IsLoading() ) SanityCheck();
@@ -950,7 +938,7 @@ AppConfig::UiTemplateOptions::UiTemplateOptions()
 	OutputProgressive	= L"Progressive";
 	OutputInterlaced	= L"Interlaced";
 	Paused				= L"<PAUSED> ";
-	TitleTemplate		= L"Slot: ${slot} | Speed: ${speed} (${vfps}) | Limiter: ${limiter} | ${gsdx} | ${omodei} | ${cpuusage}";
+	TitleTemplate		= L"Slot: ${slot} | Speed: ${speed} (${vfps}) | ${videomode} | Limiter: ${limiter} | ${gsdx} | ${omodei} | ${cpuusage}";
 }
 
 void AppConfig::UiTemplateOptions::LoadSave(IniInterface& ini)
@@ -1057,13 +1045,13 @@ bool AppConfig::IsOkApplyPreset(int n)
 	switch (n){	//currently implemented such that any preset also applies all lower presets, with few exceptions.
 
 		case 5 :	//Set VU cycle steal to 2 clicks (maximum-1)
-					vuUsed?0:(vuUsed=true, EmuOptions.Speedhacks.VUCycleSteal = 2);
+					vuUsed?0:(vuUsed=true, EmuOptions.Speedhacks.EECycleSkip = 2);
 		
 		case 4 :	//set EE cyclerate to 2 clicks (maximum)
 					eeUsed?0:(eeUsed=true, EmuOptions.Speedhacks.EECycleRate = -2);
 
 		case 3 :	//Set VU cycle steal to 1 click, set VU clamp mode to 'none'
-					vuUsed?0:(vuUsed=true, EmuOptions.Speedhacks.VUCycleSteal = 1);
+					vuUsed?0:(vuUsed=true, EmuOptions.Speedhacks.EECycleSkip = 1);
 					EmuOptions.Cpu.Recompiler.vuOverflow	  =
 					EmuOptions.Cpu.Recompiler.vuExtraOverflow =
 					EmuOptions.Cpu.Recompiler.vuSignOverflow = false; //VU Clamp mode to 'none'
@@ -1120,7 +1108,7 @@ void RelocateLogfile()
 	if( emuLog == NULL )
 	{
 		emuLogName = newlogname;
-		emuLog = fopen( emuLogName.ToUTF8(), "wb" );
+		emuLog = wxFopen( emuLogName, "wb" );
 	}
 
 	wxGetApp().EnableAllLogging();

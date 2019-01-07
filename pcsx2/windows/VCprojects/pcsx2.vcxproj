@@ -105,10 +105,6 @@
       <Command>cmd.exe /c %(RelativeDir)bin2cpp.cmd %(Filename)%(Extension)</Command>
       <Outputs>%(RelativeDir)%(Filename).h</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\gui\Resources\ConfigIcon_Appearance.png">
-      <Command>cmd.exe /c %(RelativeDir)bin2cpp.cmd %(Filename)%(Extension)</Command>
-      <Outputs>%(RelativeDir)%(Filename).h</Outputs>
-    </CustomBuild>
     <CustomBuild Include="..\..\gui\Resources\ConfigIcon_Cpu.png">
       <Command>cmd.exe /c %(RelativeDir)bin2cpp.cmd %(Filename)%(Extension)</Command>
       <Outputs>%(RelativeDir)%(Filename).h</Outputs>
@@ -179,9 +175,7 @@
     <ClCompile Include="..\..\gui\Debugger\DebugEvents.cpp" />
     <ClCompile Include="..\..\gui\Debugger\DebuggerLists.cpp" />
     <ClCompile Include="..\..\gui\Debugger\DisassemblyDialog.cpp" />
-    <ClCompile Include="..\..\gui\Dialogs\GameDatabaseDialog.cpp" />
     <ClCompile Include="..\..\gui\Dialogs\McdConfigDialog.cpp" />
-    <ClCompile Include="..\..\gui\Panels\GameDatabasePanel.cpp" />
     <ClCompile Include="..\..\gui\Panels\MemoryCardListView.cpp" />
     <ClCompile Include="..\..\IopGte.cpp" />
     <ClCompile Include="..\..\IPU\IPUdma.cpp" />
@@ -433,6 +427,7 @@
     <ClInclude Include="..\..\GameDatabase.h" />
     <ClInclude Include="..\..\Gif_Unit.h" />
     <ClInclude Include="..\..\gui\AppGameDatabase.h" />
+    <ClInclude Include="..\..\gui\Saveslots.h" />
     <ClInclude Include="..\..\gui\Debugger\BreakpointWindow.h" />
     <ClInclude Include="..\..\gui\Debugger\CtrlDisassemblyView.h" />
     <ClInclude Include="..\..\gui\Debugger\CtrlMemView.h" />

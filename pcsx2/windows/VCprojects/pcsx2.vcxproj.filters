@@ -754,12 +754,6 @@
     <ClCompile Include="..\..\gui\Dialogs\McdConfigDialog.cpp">
       <Filter>AppHost\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\gui\Dialogs\GameDatabaseDialog.cpp">
-      <Filter>AppHost\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\Panels\GameDatabasePanel.cpp">
-      <Filter>AppHost\Panels</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\gui\Panels\MemoryCardListView.cpp">
       <Filter>AppHost\Panels</Filter>
     </ClCompile>
@@ -1203,6 +1197,9 @@
     <ClInclude Include="..\..\gui\RecentIsoList.h">
       <Filter>AppHost\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\gui\Saveslots.h">
+      <Filter>AppHost\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\cheats\cheats.h">
       <Filter>AppHost\Cheats</Filter>
     </ClInclude>
@@ -1378,9 +1375,6 @@
       <Filter>AppHost\Resources</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\gui\Resources\ConfigIcon_Video.png">
-      <Filter>AppHost\Resources</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\gui\Resources\ConfigIcon_Appearance.png">
       <Filter>AppHost\Resources</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\gui\Resources\Breakpoint_Inactive.png">
